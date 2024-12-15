@@ -1,10 +1,16 @@
 "use client";
 import { ExpirationOptions } from "./ExpirationOptions";
 import { useState } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const ShortenerForm = ({ refetchUrls }) => {
   const [expirationTime, setExpirationTime] = useState("");
   const [longUrl, setLongUrl] = useState("");
+
+  const notifySuccess = () => toast.success("URL inserted successfully!");
+  const notifyError = () => toast.error("Error while inserting the URL!");
+
 
   const updateExpirationTime = (event) => {
     setExpirationTime(event.target.value);
@@ -33,13 +39,17 @@ export const ShortenerForm = ({ refetchUrls }) => {
       });
 
       if (response.ok) {
+        notifySuccess()
         resetForm();
         refetchUrls();
       }
     } catch (error) {
+      notifyError()
       console.error("Error during POST request:", error);
     }
   };
+
+
 
   return (
     <div className="flex-1 p-8">
@@ -61,6 +71,7 @@ export const ShortenerForm = ({ refetchUrls }) => {
         <button className="bg-[#89109c] text-white p-3 mt-4 w-36 h-11 flex items-center justify-center ">
           <p className="text-sm">Shorten URL</p>
         </button>
+        <ToastContainer position="top-center" autoClose={2000} closeOnClick theme="light"/>
       </form>
     </div>
   );

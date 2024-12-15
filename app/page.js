@@ -1,10 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { SidebarLayout } from "./components/Sidebar/SidebarLayout";
 import { ShortenerForm } from "./components/URLShortenerForm/ShortenerForm";
 
 export default function Home() {
   const [urls, setUrls] = useState([]);
+  const notifySuccess = () => toast.success("URL deleted successfully!");
+  const notifyError = () => toast.error("Error while deleting the URL!");
 
   const refetchUrls = () => {
     fetch("http://localhost:3000/api", {
@@ -26,11 +30,12 @@ export default function Home() {
 
       if (response.ok) {
         refetchUrls();
+        notifySuccess();
       } else {
-        console.error("Error deleting URL:", response.statusText);
-      S}
-    } catch (error) {
-      console.error("Error during DELETE request:", error);
+        notifyError();
+      }
+    } catch {
+      notifyError();
     }
   };
 
@@ -43,6 +48,7 @@ export default function Home() {
   return (
     <div className="flex h-screen">
       <SidebarLayout urls={urls} deleteUrl={deleteUrl} />
+      <ToastContainer position="top-center" autoClose={2000} closeOnClick theme="light"/>
 
       <main className="flex-1 p-24 ">
         <ShortenerForm refetchUrls={refetchUrls} />
