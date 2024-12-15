@@ -22,11 +22,49 @@ export async function GET(req, res) {
   }
 
   // Perform a database query to retrieve an item based on the id
-  const item = await db.get("SELECT * FROM items WHERE id = ?", id);
+  const item = await db.get("SELECT * FROM urls WHERE id = ?", id);
 
   // Return the items as a JSON response with status 200
   return new Response(JSON.stringify(item), {
     headers: { "Content-Type": "application/json" },
     status: 200,
   });
+}
+
+
+export async function DELETE(req, res) {
+  if (!db) {
+    db = await open({
+      filename: "./collection.db",
+      driver: sqlite3.Database,
+    });
+  }
+  console.log("do we come here");
+  try {
+    const urlId = new URL(req.url).pathname.split("/").pop(); // Extract ID from URL path
+
+    // Delete the URL from the database
+    const result = await db.run("DELETE FROM urls WHERE id = ?", urlId);
+
+    if (result.changes > 0) {
+      return new Response(
+        JSON.stringify({ message: "URL deleted successfully" }),
+        {
+          headers: { "Content-Type": "application/json" },
+          status: 200,
+        }
+      );
+    } else {
+      return new Response(JSON.stringify({ message: "URL not found" }), {
+        headers: { "Content-Type": "application/json" },
+        status: 404,
+      });
+    }
+  } catch (error) {
+    console.error("Error deleting URL:", error);
+    return new Response(JSON.stringify({ message: "Internal Server Error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 }
