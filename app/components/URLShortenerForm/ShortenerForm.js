@@ -41,7 +41,7 @@ export const ShortenerForm = ({ refetchUrls }) => {
       if (response.ok) {
         notifySuccess()
         resetForm();
-        refetchUrls();
+         await refetchUrls();
       }
     } catch (error) {
       notifyError()

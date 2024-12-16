@@ -1,36 +1,67 @@
 import sqlite3 from "sqlite3";
 import { open, Database } from "sqlite";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
-// Let's initialize it as null initially, and we will assign the actual database instance later.
 let db = null;
 
-// Define the GET request handler function
 export async function GET(req, res) {
-  // Extract the "id" from the URL by splitting the URL and taking the last element
-  const id = req.url.split("/").pop();
+  try {
+    const shortUrlId = req.url.split("/").pop();
 
-  // Log the extracted "id" to the console (for debugging purposes)
-  console.log(id);
+    if (!db) {
+      db = await open({
+        filename: "./collection.db",
+        driver: sqlite3.Database,
+      });
+    }
 
-  // Check if the database instance has been initialized
-  if (!db) {
-    // If the database instance is not initialized, open the database connection
-    db = await open({
-      filename: "./collection.db", // Specify the database file path
-      driver: sqlite3.Database, // Specify the database driver (sqlite3 in this case)
+    const urlData = await db.get(
+      "SELECT * FROM urls WHERE shortUrl LIKE ?",
+      `%${shortUrlId}`
+    );
+
+    if (!urlData) {
+      return new Response(JSON.stringify({ message: "URL not found" }), {
+        headers: { "Content-Type": "application/json" },
+        status: 404,
+      });
+    }
+
+    await db.run(
+      "UPDATE urls SET clickCount = clickCount + 1 WHERE id = ?",
+      urlData.id
+    );
+
+    const expirationTime = dayjs(urlData.createdAt)
+      .add(urlData.expireTime, "minute")
+      .tz("Europe/Belgrade");
+
+    const hasExpired = dayjs().tz("Europe/Belgrade").isAfter(expirationTime);
+
+    if (hasExpired) {
+      return new Response(JSON.stringify({ message: "URL has expired" }), {
+        headers: { "Content-Type": "application/json" },
+        status: 404,
+      });
+    }
+
+
+
+    return new Response(JSON.stringify(urlData), {
+      headers: { "Content-Type": "application/json" },
+      status: 200,
+    });
+  } catch {
+    return new Response(JSON.stringify({ message: "Internal Server Error" }), {
+      headers: { "Content-Type": "application/json" },
+      status: 500,
     });
   }
-
-  // Perform a database query to retrieve an item based on the id
-  const item = await db.get("SELECT * FROM urls WHERE id = ?", id);
-
-  // Return the items as a JSON response with status 200
-  return new Response(JSON.stringify(item), {
-    headers: { "Content-Type": "application/json" },
-    status: 200,
-  });
 }
-
 
 export async function DELETE(req, res) {
   if (!db) {
@@ -39,11 +70,9 @@ export async function DELETE(req, res) {
       driver: sqlite3.Database,
     });
   }
-  console.log("do we come here");
   try {
-    const urlId = new URL(req.url).pathname.split("/").pop(); // Extract ID from URL path
+    const urlId = new URL(req.url).pathname.split("/").pop();
 
-    // Delete the URL from the database
     const result = await db.run("DELETE FROM urls WHERE id = ?", urlId);
 
     if (result.changes > 0) {

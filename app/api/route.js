@@ -1,7 +1,11 @@
 import sqlite3 from "sqlite3";
 import { open, Database } from "sqlite";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
-// Let's initialize it as null initially, and we will assign the actual database instance later.
 let db = null;
 const APP_URL = "http://localhost:3000/";
 
@@ -33,13 +37,13 @@ export async function POST(req) {
 
   try {
     const { longUrl, expirationTime } = await req.json();
+
     let shortUrlPath = "";
     let shortUrl = "";
     let isUnique = false;
 
     while (!isUnique) {
       shortUrlPath = generateRandomString();
-      console.log("shortUrlPath", shortUrlPath);
       const existingUrl = await db.get(
         "SELECT shortUrl FROM urls WHERE shortUrl = ?",
         `${APP_URL}${shortUrlPath}`
@@ -51,13 +55,13 @@ export async function POST(req) {
     }
 
     shortUrl = `${APP_URL}${shortUrlPath}`;
-
     await db.run(
-      "INSERT INTO urls (longUrl, shortUrl, expireTime, clickCount) VALUES (?, ?, ?, ?)",
+      "INSERT INTO urls (longUrl, shortUrl, expireTime, clickCount, createdAt) VALUES (?, ?, ?, ?, ?)",
       longUrl,
       shortUrl,
       expirationTime,
-      0
+      0,
+      dayjs().tz().format()
     );
 
     return new Response(
@@ -75,4 +79,3 @@ export async function POST(req) {
     });
   }
 }
-
