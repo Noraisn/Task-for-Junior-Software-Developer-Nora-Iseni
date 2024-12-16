@@ -54,7 +54,7 @@ export default function Home() {
 
   return (
     <div className="flex h-screen">
-      <SidebarLayout urls={urls} deleteUrl={deleteUrl}  refetchUrls={refetchUrls}/>
+      <SidebarLayout urls={urls} deleteUrl={deleteUrl}/>
       <main className="flex-1 p-24 ">
         <ShortenerForm refetchUrls={refetchUrls} />
       </main>

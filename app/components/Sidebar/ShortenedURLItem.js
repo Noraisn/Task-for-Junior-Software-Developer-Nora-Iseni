@@ -1,12 +1,6 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
-export const ShortenedURLItem = ({ url, deleteUrl, refetchUrls }) => {
-  const handleClick = async () => {
-    try {
-      await refetchUrls(); 
-    } catch (error) {
-      console.error("Error updating click count:", error);
-    }
-  };
+export const ShortenedURLItem = ({ url, deleteUrl }) => {
+
   return (
     <li className="mb-4">
     <div className="flex justify-between items-center">
@@ -15,9 +9,7 @@ export const ShortenedURLItem = ({ url, deleteUrl, refetchUrls }) => {
         target="_blank"
         rel="noopener noreferrer"
         className="text-sm text-[#30b3e3] hover:text-[#125b82] underline flex-grow"
-        onClick={() => {
-          handleClick();
-        }}
+    
       >
         {url.shortUrl}
       </a>
