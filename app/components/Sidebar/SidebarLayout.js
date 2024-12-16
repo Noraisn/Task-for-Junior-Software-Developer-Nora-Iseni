@@ -3,9 +3,13 @@ import { ShortenedURLsList } from "./ShortenedURLList";
 
 export const SidebarLayout = ({ urls, deleteUrl, refetchUrls }) => {
   return (
-    <aside className="w-full md:w-1/5 bg-gray-100 h-screen p-4 flex flex-col pt-10">
+    <aside className="w-full md:w-1/5 bg-gray-100 h-screen p-4 flex flex-col pt-10 overflow-auto">
       <AnchorzUpIcon />
-      <ShortenedURLsList urls={urls} deleteUrl={deleteUrl} refetchUrls={refetchUrls} />
+      <ShortenedURLsList 
+        urls={urls} 
+        deleteUrl={deleteUrl} 
+        refetchUrls={refetchUrls} 
+      />
     </aside>
   );
 };

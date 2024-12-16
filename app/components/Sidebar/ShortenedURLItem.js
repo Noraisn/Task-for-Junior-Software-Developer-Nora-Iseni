@@ -22,7 +22,7 @@ export const ShortenedURLItem = ({ url, deleteUrl, refetchUrls }) => {
       </a>
       <button
         onClick={() => deleteUrl(url.id)}
-        className="text-gray-500 hover:text-gray-700 ml-4"
+        className="text-gray-500 hover:text-gray-700 ml-6"
       >
         <RiDeleteBin6Line />
       </button>

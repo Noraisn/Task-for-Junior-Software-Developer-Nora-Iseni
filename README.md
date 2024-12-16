@@ -6,4 +6,3 @@
 
 3.npm run dev
 
-Task-for-Junior-Software-Developer---Nora-Iseni.
