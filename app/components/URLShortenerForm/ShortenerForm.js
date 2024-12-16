@@ -26,6 +26,7 @@ export const ShortenerForm = ({ refetchUrls }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+     if (longUrl.trim() === "") return
     try {
       const response = await fetch("http://localhost:3000/api", {
         method: "POST",
@@ -68,7 +69,7 @@ export const ShortenerForm = ({ refetchUrls }) => {
             updateExpirationTime={updateExpirationTime}
           />
         </div>
-        <button className="bg-[#89109c] text-white p-3 mt-4 w-36 h-11 flex items-center justify-center ">
+        <button className="bg-[#89109c] text-white p-3 mt-4 w-36 h-11 flex items-center justify-center " disabled={!longUrl.trim()}>
           <p className="text-sm">Shorten URL</p>
         </button>
         <ToastContainer position="top-center" autoClose={2000} closeOnClick theme="light"/>

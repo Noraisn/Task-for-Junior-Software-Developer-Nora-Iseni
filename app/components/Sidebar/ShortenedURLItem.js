@@ -1,5 +1,4 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { useState } from "react";
 export const ShortenedURLItem = ({ url, deleteUrl, refetchUrls }) => {
   const handleClick = async () => {
     try {
@@ -16,7 +15,9 @@ export const ShortenedURLItem = ({ url, deleteUrl, refetchUrls }) => {
         target="_blank"
         rel="noopener noreferrer"
         className="text-sm text-[#30b3e3] hover:text-[#125b82] underline flex-grow"
-        onClick={handleClick}
+        onClick={() => {
+          handleClick();
+        }}
       >
         {url.shortUrl}
       </a>

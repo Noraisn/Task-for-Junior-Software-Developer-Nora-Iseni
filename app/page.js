@@ -52,7 +52,6 @@ export default function Home() {
     refetchUrls();
   }, []);
 
-
   return (
     <div className="flex h-screen">
       <SidebarLayout urls={urls} deleteUrl={deleteUrl}  refetchUrls={refetchUrls}/>
